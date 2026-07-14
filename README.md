@@ -1,84 +1,107 @@
-# Find Bar Plus（自訂 Ctrl+F 搜尋）
+# Find Bar Plus (a better Ctrl+F)
 
-把瀏覽器的 `Ctrl/Cmd+F` 換成頁內搜尋列:區分大小寫、全字相符、正規表達式、**多詞多色**、命中計數、**捲軸刻度**、**搜尋歷史**、**點擊定錨導航**。
+**English** | [繁體中文](README.zh-TW.md)
 
-高亮用 **CSS Custom Highlight API**——**不改動網頁 DOM**,不會弄壞任何網站排版。整個工具純本地,不連任何伺服器。
+Replaces the browser's `Ctrl/Cmd+F` with an in-page find bar: match case, whole
+word, regex, **multi-word (colored)** search, a match counter, **scrollbar tick
+marks**, **search history**, and **click-anchor navigation**.
 
-## 載入(未封裝)
+Highlights use the **CSS Custom Highlight API** — the page DOM is never changed,
+so no site layout breaks. Everything runs locally; it talks to no server.
+
+## Load (unpacked)
 
 1. Chrome → `chrome://extensions`
-2. 開啟 **開發者模式**
-3. **載入未封裝項目** → 選這個 `findbar-plus/` 資料夾
+2. Turn on **Developer mode**
+3. **Load unpacked** → pick this `better-find/` folder
 
-## 基本操作
+## Basics
 
-| 按鍵 | 動作 |
+| Key | Action |
 |---|---|
-| `Cmd/Ctrl+F` | 開啟搜尋列(原生搜尋被蓋掉)|
-| `Enter` / `Shift+Enter` | 下一個 / 上一個 |
-| `Cmd/Ctrl+G`、`F3`(列開著時)| 下一個(`Shift` = 上一個)|
-| `↑` / `↓`(游標在輸入框)| 叫回搜尋歷史(最近 20 筆)|
-| `Esc`(游標在輸入框)| 關閉並清除高亮 |
+| `Cmd/Ctrl+F` | Open the find bar (native find is suppressed) |
+| `Enter` / `Shift+Enter` | Next / previous match |
+| `Cmd/Ctrl+G`, `F3` (bar open) | Next (`Shift` = previous) |
+| `↑` / `↓` (in the input) | Recall search history (last 20) |
+| `Esc` (in the input) | Close and clear highlights |
 
-搜尋列:`[輸入框] 3/128 │ Aa ab (.*) 多 │ ⌃ ⌄ ✕`
+Bar layout: `[input] 3/128 │ Aa ab (.*) 多 │ ⌃ ⌄ ✕`
 
-- **Aa** 區分大小寫、**ab** 全字相符、**(.\*)** 正規表達式、**多** 多詞模式(下述)
-- 四個開關的狀態會記住(跨分頁)
-- 開啟時自動帶入頁面選取中的文字
-- 目前命中橘色、其餘黃色(多詞模式下每詞一色)
+- **Aa** match case, **ab** whole word, **(.\*)** regex, **多** multi-word mode (below)
+- The four toggles are remembered (across tabs)
+- Selected page text prefills the search on open
+- Current match is orange, the rest yellow (one color per term in multi-word mode)
 
-## 多詞多色模式（「多」開關）
+## Multi-word colored mode (the **多** toggle)
 
-平常關閉時**行為完全不變**:空格就是空格,搜什麼就是什麼。
+When it's **off** (default), behavior is unchanged: a space is a literal space,
+you search exactly what you type.
 
-開啟「多」之後:
+When **on**:
 
-| 輸入 | 解讀 |
+| Input | Meaning |
 |---|---|
-| `bridge tunnel` | 兩個詞:`bridge`、`tunnel`,各一個顏色同時高亮 |
-| `"speed limit" bypass` | 兩個詞:片語 `speed limit`(含空格)+ `bypass` |
-| `"a b" "c d"` | 兩個片語 |
+| `bridge tunnel` | two terms: `bridge`, `tunnel`, each highlighted in its own color |
+| `"speed limit" bypass` | two terms: the phrase `speed limit` (with the space) + `bypass` |
+| `"a b" "c d"` | two phrases |
 
-- **空格 = 分隔不同詞;`"雙引號"` = 把含空格的片語當成一個詞**(跟 Google 搜尋一樣)
-- 大小寫 / 全字開關套用到每個詞
-- 上/下一個 = 所有詞的命中**按頁面出現順序**走
-- 滑鼠移到計數上會顯示**各詞分別幾個**(某詞 0 命中一眼看穿)
-- 與正規表達式模式**互斥**(開一個會關另一個)。要在一般模式搜多詞同色,可用 regex 的 `bridge|tunnel`
+- **Space = separates terms; `"double quotes"` = keep a spaced phrase as one term** (like Google search)
+- The match-case / whole-word toggles apply to every term
+- Next / previous walks **all** terms' matches in document order
+- Hover the counter to see **each term's count** (spot a 0-match term at a glance)
+- **Mutually exclusive** with regex mode (turning one on turns the other off). To
+  search several words in one color in normal mode, use regex `bridge|tunnel`
 
-## 捲軸刻度
+## Scrollbar tick marks
 
-- 頁面右緣細軌,每個命中畫一條刻度(多詞模式**跟著詞的顏色**),目前命中橘色加粗
-- **點刻度直接跳到那個命中**
-- 限制:只畫主頁面(top frame)的命中;內部捲動容器 / iframe 內的命中不畫刻度,但**計數與高亮仍正常**;`<option>` 清單裡的命中沒有版面盒子,不畫刻度
+- A thin rail on the right edge draws a mark for every match (in multi-word mode
+  each mark takes **its term's color**); the current match is a bold orange mark
+- **Click a mark to jump straight to that match**
+- Limits: only the main (top) frame's matches get marks; matches inside inner
+  scroll containers / iframes are not marked, but **their count and highlight
+  still work**; matches inside `<option>` rows have no layout box, so no mark
 
-## 點擊定錨導航
+## Click-anchor navigation
 
-- 在頁面任一處**點一下**,接著按 **下一個 / 上一個**,就會**從你點的位置開始**找,而不是從頭
-- `Enter` = 點擊處之後的第一個命中;`Shift+Enter` = 點擊處之前的最後一個命中;之後正常步進,直到你再次點擊
-- iframe 內點擊也支援(經背景轉發對位)
+- **Click anywhere** on the page, then press **Next / Previous** — it starts
+  **from where you clicked**, not from the top
+- `Enter` = first match at/after the click; `Shift+Enter` = last match before it;
+  after that it steps normally until you click again
+- Clicks inside iframes are supported too (coordinated via the background worker)
 
-## 搜尋歷史
+## Search history
 
-- 輸入框按 `↑` / `↓` 叫回最近 20 筆搜過的詞(跨分頁記住)
-- 記錄時機:按 Enter 導航、點上/下一個、或帶著關鍵字關閉時——不會每敲一個字就存
+- Press `↑` / `↓` in the input to recall the last 20 searches (kept across tabs)
+- Recorded when: you navigate with Enter, click Next/Previous, or close the bar
+  with a query in it — not on every keystroke
 
-## iframe 搜尋
+## iframe search
 
-iframe 內的文字**也搜得到**。每個框架各自搜尋、各自高亮,主頁面的搜尋列彙整總數,上/下一個會照順序跨框架走;焦點在 iframe 裡按 `Cmd/Ctrl+F` 也能開搜尋列。
+Text inside iframes **is** searched. Each frame searches and highlights its own
+document; the top frame's bar aggregates the total, and Next/Previous walks
+across frames in order. `Cmd/Ctrl+F` also opens the bar when focus is in an iframe.
 
-## `<select>` 清單（NDS Web Viewer 等）
+## `<select>` lists (e.g. NDS Web Viewer)
 
-展開的清單框(`multiple` 或 `size>1` 的 `<select>`,例如 NDS Web Viewer 的 Attribute Highlighting 屬性清單)裡的 `<option>` **搜得到**;目前命中的那列會**上橘色**(CSS Highlight 畫不進 `<option>`,所以用底色替代)。收合的一般下拉選單不搜(選項本來就看不見)。
+`<option>` rows inside an **open** list box (`multiple` or `size>1` `<select>`,
+such as NDS Web Viewer's Attribute Highlighting list) **are** searchable; the
+current match's row is **tinted orange** (the CSS Highlight API can't paint
+inside `<option>`, so a background color stands in). A collapsed dropdown is not
+searched (its options aren't rendered).
 
-## 誠實的限制
+## Honest limitations
 
-- `chrome://`、Chrome Web Store、**PDF 檢視器**:擴充無法執行 → 那些頁面自動用原生搜尋(剛好當 fallback)
-- 別的擴充的框架、沙箱化的邊角情況:不搜
-- **Canvas 畫的文字**(Google Docs、Figma):不在 DOM 裡,搜不到
-- 空白照字面比對:`a b` 不會命中換行的 `a\nb`
-- 跨網域 iframe 內命中的捲動:會捲動該 iframe 內部,外層頁面不一定會自動捲到它露出來(瀏覽器安全限制);計數與高亮不受影響
-- 原生搜尋仍可從選單 編輯 → 尋找 叫出
+- `chrome://` pages, Chrome Web Store, the **PDF viewer**: extensions can't run
+  there → those pages fall back to native find (a nice fallback)
+- Frames from other extensions and sandboxed edge cases are not searched
+- **Canvas-rendered text** (Google Docs, Figma): not in the DOM, can't be found
+- Whitespace is matched literally — `a b` does not match `a\nb`
+- Scrolling to a match inside a **cross-origin** iframe scrolls that iframe; the
+  outer page may not always scroll to reveal it (a browser security limit);
+  count and highlight are unaffected
+- Native find is still reachable from the menu: Edit → Find
 
-## 版本
+## Version
 
-0.3.0 — 多詞多色、捲軸刻度、搜尋歷史、點擊定錨導航、iframe 搜尋、`<option>` 清單可搜。
+0.3.2 — multi-word colored search, scrollbar ticks, search history,
+click-anchor navigation, iframe search, `<option>` list support.
