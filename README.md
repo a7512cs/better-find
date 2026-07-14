@@ -25,14 +25,14 @@ so no site layout breaks. Everything runs locally; it talks to no server.
 | `↑` / `↓` (in the input) | Recall search history (last 20) |
 | `Esc` (in the input) | Close and clear highlights |
 
-Bar layout: `[input] 3/128 │ Aa ab (.*) 多 │ ⌃ ⌄ ✕`
+Bar layout: `[input] 3/128 │ Aa ab (.*) ●● │ ⌃ ⌄ ✕`
 
-- **Aa** match case, **ab** whole word, **(.\*)** regex, **多** multi-word mode (below)
+- **Aa** match case, **ab** whole word, **(.\*)** regex, **●●** multi-word mode (below)
 - The four toggles are remembered (across tabs)
 - Selected page text prefills the search on open
 - Current match is orange, the rest yellow (one color per term in multi-word mode)
 
-## Multi-word colored mode (the **多** toggle)
+## Multi-word colored mode (the **●●** toggle)
 
 When it's **off** (default), behavior is unchanged: a space is a literal space,
 you search exactly what you type.

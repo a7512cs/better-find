@@ -764,6 +764,10 @@
           button:active { background: #e8eaed; }
           button.on { background: #d3e3fd; color: #0b57d0; }
           .word { text-decoration: underline dotted; }
+          .multi { gap: 2px; }
+          .multi .dot { width: 7px; height: 7px; border-radius: 50%; }
+          .multi .d0 { background: #e0b800; }
+          .multi .d1 { background: #3d8fe0; }
           .nav { width: 24px; padding: 0; color: #5f6368; }
           .nav svg { width: 16px; height: 16px; display: block; }
           .nav path {
@@ -795,7 +799,7 @@
           <button class="tgl case" title="區分大小寫">Aa</button>
           <button class="tgl word" title="全字拼寫須相符">ab</button>
           <button class="tgl regex" title="使用正規表達式">(.*)</button>
-          <button class="tgl multi" title="多詞模式：空格分隔，&quot;引號&quot;保護片語，每詞一色">多</button>
+          <button class="tgl multi" title="多詞模式：空格分隔，&quot;引號&quot;保護片語，每詞一色"><span class="dot d0"></span><span class="dot d1"></span></button>
           <span class="sep"></span>
           <button class="nav prev" title="上一個 (Shift+Enter)">${CHEVRON_UP}</button>
           <button class="nav next" title="下一個 (Enter)">${CHEVRON_DOWN}</button>
