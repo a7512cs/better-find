@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Find Bar Plus（自訂 Ctrl+F 搜尋）",
+  "version": "0.3.2",
+  "description": "Replace the browser's Ctrl/Cmd+F with an in-page find bar: match case, whole word, regex, match counter, iframe search.",
+  "permissions": ["storage"],
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "all_frames": true,
+      "match_about_blank": true
+    }
+  ]
+}
