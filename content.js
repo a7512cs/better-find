@@ -116,8 +116,14 @@
     // but overridable, so a visibility:hidden ancestor may still have
     // visibility:visible descendants — those must stay searchable.
     const textVis = { checkVisibilityCSS: true, visibilityProperty: true };
+    // `display:contents` elements generate no box, so checkVisibility() is false
+    // for them even though their text IS rendered — look through contents
+    // wrappers to the nearest boxed ancestor before calling a text node hidden.
     const isTextVisible = (n) => {
-      const p = n.parentElement;
+      let p = n.parentElement;
+      if (!p || typeof p.checkVisibility !== "function") return true;
+      if (p.checkVisibility(textVis)) return true;
+      while (p && getComputedStyle(p).display === "contents") p = p.parentElement;
       return !p || typeof p.checkVisibility !== "function" || p.checkVisibility(textVis);
     };
     const walk = (node) => {
@@ -133,7 +139,11 @@
         // closed dropdown: options are not rendered; listbox options are
         if (tag === "SELECT" && !(node.multiple || node.size > 1)) return;
         if (node.id === HOST_ID) return; // never search our own bar
-        if (typeof node.checkVisibility === "function" && !node.checkVisibility()) return;
+        // Prune only genuinely non-rendered subtrees. `display:contents` has no
+        // box (checkVisibility()===false) yet DOES render its children, so it
+        // must not prune them.
+        if (typeof node.checkVisibility === "function" && !node.checkVisibility() &&
+            getComputedStyle(node).display !== "contents") return;
         if (node.shadowRoot) {
           for (let c = node.shadowRoot.firstChild; c; c = c.nextSibling) walk(c);
         }

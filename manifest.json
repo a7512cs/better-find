@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Find Bar Plus（自訂 Ctrl+F 搜尋）",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Replace the browser's Ctrl/Cmd+F with an in-page find bar: match case, whole word, regex, match counter, iframe search.",
   "icons": {
     "16": "icons/icon16.png",
