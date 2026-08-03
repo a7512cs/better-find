@@ -913,11 +913,13 @@
       ui.input.select();
       histIdx = -1;
       if (ui.input.value) runSearch(true);
+      startDomWatch();
     }
 
     function closeBar() {
       if (!ui) return;
       commitHistory(ui.input.value);
+      stopDomWatch();
       ui.host.style.display = "none";
       frames.clear();
       cur = null;
@@ -929,6 +931,30 @@
       clearLocal();
       clearTicks();
       send({ cmd: "clear" }); // children clear their highlights too
+    }
+
+    // The page can render content lazily (SPA), virtualize rows, or otherwise
+    // mutate after a search already ran — leaving the count/highlights frozen on
+    // a stale snapshot. While the bar is open, re-run the search when the DOM
+    // changes so results stay live. Highlighting mutates no DOM, so this can't
+    // feed back on itself.
+    let domObs = null, rescanT = null;
+    function startDomWatch() {
+      if (domObs) return;
+      ensurePageStyle(); // insert our highlight <style> now so it can't self-trigger the observer
+      domObs = new MutationObserver(() => {
+        clearTimeout(rescanT);
+        rescanT = setTimeout(() => {
+          if (!isOpen() || !curTerms.length) return;
+          const had = orderedFrames().reduce((s, f) => s + f.count, 0) > 0;
+          runSearch(!had); // was empty -> jump to the first newly-rendered match
+        }, 350);
+      });
+      domObs.observe(document.documentElement, { subtree: true, childList: true, characterData: true });
+    }
+    function stopDomWatch() {
+      if (domObs) { domObs.disconnect(); domObs = null; }
+      clearTimeout(rescanT);
     }
 
     window.addEventListener(
